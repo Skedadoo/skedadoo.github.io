@@ -9,14 +9,14 @@
 <meta name="robots" content="index, follow">
 <meta name="geo.region" content="SG">
 <meta name="geo.placename" content="Singapore">
-<link rel="canonical" href="https://www.nickenterprise.com/">
+<link rel="canonical" href="https://www.nickenterprise.sg/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Nick Enterprise">
 <meta property="og:title" content="Nick Enterprise | Tile, Marble &amp; Granite Supplier in Singapore">
 <meta property="og:description" content="Supplying tile, marble, granite, natural stone, and mosaic across Singapore since 2011. From residential renovations to malls and commercial developments.">
-<meta property="og:url" content="https://www.nickenterprise.com/">
+<meta property="og:url" content="https://www.nickenterprise.sg/">
 <meta property="og:locale" content="en_SG">
 
 <!-- Twitter -->
@@ -657,24 +657,25 @@
         </div>
       </div>
 
-      <form id="quoteForm" class="reveal">
+      <form id="quoteForm" class="reveal" action="https://formspree.io/f/mbgjyqle" method="POST">
+        <input type="hidden" name="_subject" value="New quote request from the Nick Enterprise website">
         <div class="form-row">
           <div>
             <label for="name">Name</label>
-            <input id="name" type="text" required>
+            <input id="name" name="name" type="text" required>
           </div>
           <div>
             <label for="phone">Phone</label>
-            <input id="phone" type="tel">
+            <input id="phone" name="phone" type="tel">
           </div>
         </div>
         <div>
           <label for="email">Email</label>
-          <input id="email" type="email" required>
+          <input id="email" name="email" type="email" required>
         </div>
         <div>
           <label for="type">Project type</label>
-          <select id="type">
+          <select id="type" name="project_type">
             <option>Residential renovation</option>
             <option>New build</option>
             <option>Commercial project</option>
@@ -683,7 +684,7 @@
         </div>
         <div>
           <label for="message">Tell us about the space</label>
-          <textarea id="message" placeholder="Square footage, tile type you're after, timeline..."></textarea>
+          <textarea id="message" name="message" placeholder="Square footage, tile type you're after, timeline..."></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Send message</button>
         <p class="form-note" id="formNote">We reply within one business day.</p>
@@ -723,8 +724,28 @@
   // contact form
   document.getElementById('quoteForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    document.getElementById('formNote').textContent = "Thanks, we've got your details and will be in touch within one business day.";
-    e.target.reset();
+    const form = e.target;
+    const noteEl = document.getElementById('formNote');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    noteEl.textContent = "Sending...";
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then((response) => {
+      if (response.ok) {
+        noteEl.textContent = "Thanks, we've got your details and will be in touch within one business day.";
+        form.reset();
+      } else {
+        noteEl.textContent = "Something went wrong sending that. Please email sgnickenterprise@gmail.com or call +65 9088 4466 directly.";
+      }
+    }).catch(() => {
+      noteEl.textContent = "Something went wrong sending that. Please email sgnickenterprise@gmail.com or call +65 9088 4466 directly.";
+    }).finally(() => {
+      submitBtn.disabled = false;
+    });
   });
 
   // scroll progress bar
